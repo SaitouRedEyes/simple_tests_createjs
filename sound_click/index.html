@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/createjs-2013.05.14.min.js"></script>
+    <script>
+	
+		var stage;
+		var queue;
+		
+        function init() 
+		{
+			stage = new createjs.Stage("demoCanvas");
+			
+			//Usando a classe preloadjs
+			queue = new createjs.LoadQueue(false);
+			queue.installPlugin(createjs.Sound);
+			queue.addEventListener("complete", handlerSoundLoadComplete);
+			queue.loadManifest([{id:"imageTest", src:"images/bird.png"},
+								{id:"ballClickedSound", src:"sounds/animals013.mp3"}
+								]);
+			
+			//Sem usar a classe preloadjs
+			//createjs.Sound.registerSound("sounds/animals013.mp3", "ballClickedSound"); sec. parameter id							
+			//createjs.Sound.addEventListener("loadComplete", handlerSoundLoadComplete);
+			
+			createjs.Ticker.addEventListener("tick", _tick);			
+        }
+		
+		function handlerSoundLoadComplete(event)
+		{
+			var ball = new createjs.Shape();
+			ball.graphics.beginFill("#0000ff").drawCircle(60, 50, 30);
+			
+			createjs.Tween.get(ball, {loop:true}).to({x:250}, 3000).to({x:15}, 1000);
+			ball.addEventListener("click", handlerBallClick);
+			//ball.addEventListener("lala", lala);
+			
+			stage.addChild(ball);
+		}
+		
+		/*function lala(event)
+		{
+			console.log("lala" + event.x);
+		}*/
+		
+		function handlerBallClick(event)
+		{
+			console.log("ball clicked");
+			
+			var birdImage = new createjs.Bitmap(queue.getResult("imageTest"));
+			birdImage.x = Math.random() * 350;
+			birdImage.y = Math.random() * 250;
+			stage.addChild(birdImage);
+			
+			createjs.Sound.play("ballClickedSound");
+		}
+		
+		function _tick(event)
+		{
+			/*if(ball && ball.x > 100)
+			{
+				ball.dispatchEvent({type: "lala", x: ball.x});
+			}*/
+			stage.update();
+		}
+    </script>
+</head>
+<body onLoad="init();">
+    <canvas id="demoCanvas" width="500" height="300">
+        alternate content
+    </canvas>
+</body>
+</html>
