@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/createjs-2013.05.14.min.js"></script>
+    <script>
+	
+		var stage;
+		var queue;
+		
+		var bird;
+		var birdClicked = false;
+		
+        function init() 
+		{
+			stage = new createjs.Stage("demoCanvas");
+			
+			//Usando a classe preloadjs
+			queue = new createjs.LoadQueue(false);
+			queue.installPlugin(createjs.Sound);
+			queue.addEventListener("complete", CreateElements);
+			queue.loadManifest([{id:"bird", src:"images/bird.png"},
+								]);
+			
+			createjs.Ticker.addEventListener("tick", _tick);			
+        }
+		
+		function _tick(event)
+		{
+			stage.update();
+		}
+		
+		function CreateElements()
+		{	
+			bird = new createjs.Bitmap(queue.getResult("bird"));
+			bird.x = bird.y = 200;
+			
+			stage.addChild(bird);
+			
+			document.onmousemove = function (e) {mousePos(e);};
+			document.onmouseup = function (e) {mouseUp();};
+			
+			bird.addEventListener("mousedown", BirdClicked);			
+		}
+		
+		function mousePos(event)
+		{
+			if(birdClicked)
+			{
+				bird.x = event.x - bird.image.width / 2;
+				bird.y = event.y - bird.image.height / 2;
+			}
+		}
+		
+		function mouseUp() { birdClicked = false; }
+		function BirdClicked() { birdClicked = true; }
+		
+		
+    </script>
+</head>
+<body onLoad="init();">
+    <canvas id="demoCanvas" width="500" height="300">
+        alternate content
+    </canvas>
+</body>
+</html>
